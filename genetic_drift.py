@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import matplotlib.animation as animation
 # np.random.seed(1810)
 
 def genetic_drift(n = 1000, freq = 0.5, g = 1000, trials = 10):
