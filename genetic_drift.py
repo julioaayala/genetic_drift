@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 # np.random.seed(1810)
 
-def genetic_drift(n = 1000, freq = 0.5, g = 1000, trials = 10):
+def genetic_drift(n = 1000, freq = 0.5, g = 1000):
     '''
     n = population size
     g = generations
@@ -12,23 +12,19 @@ def genetic_drift(n = 1000, freq = 0.5, g = 1000, trials = 10):
     '''
     all_data = []
     data = [[],[]]
-    # freqs = []
-    for trial in range(trials):
-        p_A = freq
-        for i in range(g):
-            data[0].append(i)
-            data[1].append(p_A)
-            p_A = np.random.binomial(n, p_A)/n
-            # freqs.append(p_A)
-            if p_A==0 or p_A==1:
-                break # Finishes when it finds the equlibrium point
-        # freqs += [data[1][-1]] * (g - len(data[1]))
-        all_data.append(data)
-        data = [[],[]]
-    # return all_data, sum(freqs)/len(freqs)
-    return all_data
+    p_A = freq
+    fixation_gen = 0
+    for i in range(g):
+        fixation_gen = i
+        data[0].append(i)
+        data[1].append(p_A)
+        p_A = np.random.binomial(n, p_A)/n
+        # freqs.append(p_A)
+        if (p_A==0 or p_A==1):
+            break # Finishes when the allele fixates
+    return data, fixation_gen
 
-def wright_fisher(n = 100000, freq = 0.5, h = 0.25, s = 0.2, g = 100):
+def genetic_drift_with_selection(n = 100000, freq = 0.5, h = 0.25, s = 0.2, g = 100):
     '''
     n = population size
     freq = initial frequency of allele
@@ -53,6 +49,8 @@ def wright_fisher(n = 100000, freq = 0.5, h = 0.25, s = 0.2, g = 100):
     p_Aa = 2 * p_A * p_a
     p_aa = p_a * p_a
 
+    fixation_gen = 0
+
     for i in range(g): # Repeat for all generations
         # Mean fitness (Constant of proportionality)
         wbar =  (p_AA * w_AA) + (p_Aa * w_Aa) + (p_aa * w_aa)
@@ -67,7 +65,10 @@ def wright_fisher(n = 100000, freq = 0.5, h = 0.25, s = 0.2, g = 100):
         p_aa = new_population[0][2]/n
         p_A = p_AA + 0.5 * p_Aa
         p_a = p_aa + 0.5 * p_Aa
+
         data.append([p_A])
+        fixation_gen = i
+
         if p_A == 0 or p_A ==1:
             break
-    return data, genotype_data
+    return data, genotype_data, fixation_gen
